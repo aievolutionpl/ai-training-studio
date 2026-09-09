@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@openai/codex": "^0.153.4",
+    "fabric": "^7.4.0",
+    "image-size": "^1.2.1",
     "jszip": "^3.10.1",
     "pptxgenjs": "^4.0.1"
   }

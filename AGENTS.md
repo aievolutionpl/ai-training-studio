@@ -1,5 +1,9 @@
 # AI Evolution Presentation Studio
 
+## Local BUR profile (owner requested, 2026-09-09)
+
+For decks with burEdition=true, use the service-card duration and theory/practice split. A slide's plannedMinutes includes narration, demonstration and discussion; activityMinutes is the practical portion of that same time, not an addition. M14 is fully practical and its spoken prompts occur during the workshop. Scripts should explain the actual slide concisely (normally 40–160 words; covers and workshop cues can be shorter). Do not expand scripts simply to meet the generic 120-word minimum below. The generic profile is unchanged. Keep 20 slides per module, an explicit result and assessment criteria, and E1–E9 mapping. This profile was added to implement the owner's request to adapt the system to BUR training.
+
 ## Image generation routing
 
 When operating inside a Codex conversation with the built-in imagegen tool available, use it for raster slide illustrations. The browser and child Codex CLI do not automatically have access to that tool. UI creates imagegen-task.json containing the prompt and cache ID. Generate with the built-in tool, retain the original, then import via `node image-import.mjs ABSOLUTE_IMAGE_PATH CACHE_ID`. Set slide.image to returned asset path. Never claim an image was generated from a handoff alone.

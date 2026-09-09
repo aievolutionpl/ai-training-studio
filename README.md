@@ -148,3 +148,10 @@ To rozwijane **lokalne studio**, nie gotowa wieloużytkownikowa usługa SaaS.
 Zgłoszenia i PR mile widziane. Priorytety: zgodność podglądu z PPTX, wizualne testy regresji, eksport DOCX/PDF oraz mocniejsza walidacja źródeł. Do zmian eksportera dodaj test struktury wynikowego pliku i sprawdź rzeczywisty slajd.
 
 Kod: MIT. Materiały zewnętrzne zachowują własne licencje. Nazwa i logo AI Evolution Polska identyfikują autora projektu.
+
+## Edytor wizualny
+
+Nowy panel: http://localhost:4317/editor.html?module=M01. Instrukcja: [EDYTOR_WIZUALNY.md](EDYTOR_WIZUALNY.md).
+
+
+Repozytorium zawiera kod systemu i wspólne ikony. Autorskie prezentacje, pliki deck.json, materiały kursowe, generowane obrazy klientów i zapisy edytora w projects/ nie są publikowane. Galeria BUR w świeżym klonie będzie pusta do czasu dodania lokalnych modułów. Ogólny generator jest dostępny na stronie głównej. Test integracyjny 280 slajdów uruchamia się tylko przy obecności lokalnego kursu; pozostałe testy używają sztucznych danych.

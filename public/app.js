@@ -1,3 +1,5 @@
+if(new URLSearchParams(location.search).has('module')&&!new URLSearchParams(location.search).has('simple'))location.replace('/editor.html'+location.search);
+import {burPreview} from './bur-preview.js';
 const $ = (s) => document.querySelector(s),
   esc = (s) =>
     String(s ?? "").replace(
@@ -25,6 +27,11 @@ try {
   deck = JSON.parse(localStorage.getItem("aievo-deck"));
   selected = deck?.style || selected;
 } catch {}
+const burModule=new URLSearchParams(location.search).get('module');
+if(/^M(0[1-9]|1[0-4])$/.test(burModule||'')){
+  const response=await fetch(`/bur-files/${burModule}/deck.json`);
+  if(response.ok){deck=await response.json();selected=deck.style;view='editor';}
+}
 const brief = {
   topic: "",
   audience: "Pracownicy i menedżerowie",
@@ -43,8 +50,9 @@ function slide(
     points: ["AI w praktyce Twojej firmy"],
   },
 ) {
+  if(deck?.burEdition && deck.slides.includes(s)) return burPreview(deck,s,deck.slides.indexOf(s));
   const cover = s.layout === "cover";
-  return `<div class="slide ${cover ? "" : "content"} ${cover && t.image ? "has-image" : ""}" data-style="${t.id}" style="--bg:#${t.bg};--fg:#${t.fg};--accent:#${t.accent};--panel:#${t.panel};--font:${t.font}">${cover ? (t.image ? `<img src="/assets/${t.image}" alt="">` : '<div class="orb"></div>') : ""}${s.image ? `<img class="custom-illustration" src="/assets/${esc(s.image)}" alt="Ilustracja slajdu">` : ""}${s.icon ? `<img class="slide-icon" src="/icons/${esc(s.icon)}.svg" alt="">` : ""}<div class="kicker">AI EVOLUTION POLSKA / ${cover ? "SZKOLENIE" : "W PRAKTYCE"}</div><h3>${esc(s.title)}</h3>${cover ? `<p>${esc(s.points[0])}</p>` : `<div class="slide-content">${s.points.map((p, i) => `<div><b>0${i + 1}</b>${esc(p)}</div>`).join("")}</div>`}<div class="footer">WIEDZA → PRAKTYKA → ZMIANA</div></div>`;
+  return `<div class="slide ${cover ? "" : "content"} ${cover && t.image ? "has-image" : ""}" data-style="${t.id}" style="--bg:#${t.bg};--fg:#${t.fg};--accent:#${t.accent};--panel:#${t.panel};--font:${t.font}">${cover ? (t.image ? `<img src="/assets/${t.image}" alt="">` : '<div class="orb"></div>') : ""}${s.image ? `<img class="custom-illustration" src="/assets/${esc(s.image)}" alt="Ilustracja slajdu">` : ""}${s.icon ? `<img class="slide-icon" src="/icons/${esc(s.icon)}.svg" alt="">` : ""}<div class="kicker">AI EVOLUTION POLSKA / ${cover ? "SZKOLENIE" : "W PRAKTYCE"}</div><h3>${esc(s.title)}</h3>${cover ? `<p>${esc(s.points[0])}</p>` : `<div class="slide-content">${s.points.map((p, i) => `<div><b>0${i + 1}</b>${esc(p.replaceAll("::", ": "))}</div>`).join("")}</div>`}<div class="footer">WIEDZA → PRAKTYKA → ZMIANA</div></div>`;
 }
 function cards() {
   return `<div class="style-grid">${styles.map((t) => `<article class="style-card ${selected === t.id ? "selected" : ""}" data-select="${t.id}" tabindex="0" role="button" aria-label="Wybierz ${t.name}">${slide(t)}<div class="style-meta"><div><strong>${t.name}</strong><br><small>${t.tag}</small></div><button data-preview="${t.id}">Podgląd ↗</button></div></article>`).join("")}</div>`;
@@ -81,7 +89,7 @@ function render() {
     }
     const s = deck.slides[index];
     $("#content").innerHTML =
-      `<div class="eyebrow">EDYTOR MODUŁU</div><h1>${esc(deck.title)}</h1><div class="actions"><select id="deckstyle" style="width:210px">${styles.map((t) => `<option value="${t.id}" ${t.id === deck.style ? "selected" : ""}>${t.name}</option>`).join("")}</select><div><button class="secondary" id="json">Zapisz JSON</button> <button class="secondary" id="import">Otwórz JSON</button> <button class="primary" id="export">Pobierz PowerPoint ↓</button></div></div><div class="editor"><div class="thumbs">${deck.slides.map((s, i) => `<button data-slide="${i}" class="${index === i ? "active" : ""}">${slide(theme(deck.style), s)}</button>`).join("")}</div><div><div id="stage">${slide(theme(deck.style), s)}</div><section class="panel" style="margin-top:18px"><span class="muted">Slajd ${index + 1} / ${deck.slides.length} · zmiany zapisują się lokalnie</span><label>Tytuł</label><input id="title" maxlength="120" value="${esc(s.title)}"><div class="edit-fields"><div><label>Treść: jeden punkt w wierszu (maks. 4)</label><textarea id="points">${esc(s.points.join("\n"))}</textarea></div><div><label>Notatki trenera</label><textarea id="notes">${esc(s.notes)}</textarea></div></div><label>Układ</label><select id="layout">${["cover", "cards", "process", "statement", "exercise", "comparison"].map((l) => `<option ${l === s.layout ? "selected" : ""}>${l}</option>`).join("")}</select><div class="actions"><button class="secondary" id="prev">← Poprzedni</button><button class="primary" id="apply">Zapisz slajd</button><button class="secondary" id="next">Następny →</button></div></section></div></div>`;
+      `<div class="eyebrow">EDYTOR MODUŁU</div><h1>${esc(deck.title)}</h1><div class="actions">${deck.burEdition ? `<select id="burpalette" aria-label="Paleta modułu" style="width:210px">${Array.from({length:14},(_,i)=>"M"+String(i+1).padStart(2,"0")).map(id=>`<option value="${id}" ${id===(deck.paletteModule||deck.moduleId)?"selected":""}>Paleta ${id}</option>`).join("")}</select>` : `<select id="deckstyle" style="width:210px">${styles.map((t) => `<option value="${t.id}" ${t.id === deck.style ? "selected" : ""}>${t.name}</option>`).join("")}</select>`}<div><button class="secondary" id="json">Zapisz JSON</button> <button class="secondary" id="import">Otwórz JSON</button> <button class="primary" id="export">Pobierz PowerPoint ↓</button></div></div><div class="editor"><div class="thumbs">${deck.slides.map((s, i) => `<button data-slide="${i}" class="${index === i ? "active" : ""}">${slide(theme(deck.style), s)}</button>`).join("")}</div><div><div id="stage">${slide(theme(deck.style), s)}</div><section class="panel" style="margin-top:18px"><span class="muted">Slajd ${index + 1} / ${deck.slides.length} · zmiany zapisują się lokalnie</span><label>Tytuł</label><input id="title" maxlength="120" value="${esc(s.title)}"><div class="edit-fields"><div><label>Treść: jeden punkt w wierszu (maks. 4)</label><textarea id="points">${esc(s.points.join("\n"))}</textarea></div><div><label>Notatki trenera</label><textarea id="notes">${esc(s.notes)}</textarea></div></div><label>Układ</label><select id="layout">${["cover", "cards", "process", "statement", "exercise", "comparison", "image", "anatomy", "evidence", "timeline", "decision", "case", "matrix"].map((l) => `<option ${l === s.layout ? "selected" : ""}>${l}</option>`).join("")}</select><div class="actions"><button class="secondary" id="prev">← Poprzedni</button><button class="primary" id="apply">Zapisz slajd</button><button class="secondary" id="next">Następny →</button></div></section></div></div>`;
   }
   if (view === "guide")
     $("#content").innerHTML =
@@ -99,7 +107,12 @@ document.addEventListener("keydown", (e) => {
     render();
   }
 });
-document.addEventListener("change", (e) => {
+document.addEventListener("change", async (e) => {
+  if(e.target.id==='burpalette'){
+    const source=await(await fetch(`/bur-files/${e.target.value}/deck.json`)).json();
+    deck.burTheme={...source.burTheme};deck.paletteModule=source.moduleId;
+    save();render();return;
+  }
   if (e.target.id === "deckstyle") {
     deck.style = e.target.value;
     selected = deck.style;

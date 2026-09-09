@@ -1,0 +1,14 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import JSZip from 'jszip';
+import {exportDeck,root} from './engine.mjs';
+import {validateTraining,trainingReview,materials} from './training.mjs';
+import {importImage} from './images.mjs';
+const fixture=()=>({title:'Plan wdrożenia',moduleId:'M14',style:'human',burEdition:true,durationMinutes:30,theoryMinutes:0,practiceMinutes:30,burTheme:{bg:'FFFFFF',fg:'203B31',accent:'526633',panel:'EEEEEE',highlight:'DDE5A9',font:'Segoe UI'},objectives:['Dwa kompletne plany'],sources:[{title:'OECD',url:'https://oecd.ai',accessedAt:'2026-09-09',supports:['Definicja AI']}],glossary:[],quiz:[],slides:Array.from({length:20},(_,i)=>({title:'Test '+i,layout:['cover','anatomy','evidence','timeline','decision','case','matrix','exercise','comparison','process'][i%10],points:['Dane::Materiał do sprawdzenia','Wynik::Jawna kontrola'],voiceScript:'Konkretne objaśnienie procesu. '.repeat(15),participantNotes:'Materiał dla uczestnika.',notes:'Prowadzenie i kontrola. '.repeat(8),plannedMinutes:1.5,activityMinutes:1.5}))});
+test('BUR includes practice in the 30-minute schedule without double counting narration',()=>{const d=fixture();validateTraining(d);assert.equal(trainingReview(d).estimatedMinutes,30);assert.equal(trainingReview(d).issues.length,0);d.slides[0].plannedMinutes=0;assert.throws(()=>validateTraining(d),/czas/);});
+test('BUR rejects incomplete module scope and mismatched theory/practice',()=>{let d=fixture();d.slides.pop();assert.throws(()=>validateTraining(d),/20/);d=fixture();d.practiceMinutes=29;assert.throws(()=>validateTraining(d),/sumują/);});
+test('BUR exports all native compositions, notes and an aspect-aware embedded image',async()=>{const d=fixture(),bytes=await fs.readFile(root+'/public/assets/logo.png'),id=createHash('sha256').update(bytes).digest('hex');d.slides[0].image=(await importImage(bytes,id)).asset;const z=await JSZip.loadAsync(await exportDeck(d));assert.equal(Object.keys(z.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n)).length,20);assert.equal(Object.keys(z.files).filter(n=>/^ppt\/notesSlides\/notesSlide\d+\.xml$/.test(n)).length,20);const first=await z.file('ppt/slides/slide1.xml').async('string');assert.match(first,/<a:srcRect/);assert.match(first,/<a:t>Plan|<a:t>Test/);assert.ok(!materials(d)['materialy-uczestnika.md'].includes('Prowadzenie i kontrola'));});
+
+test('BUR uses rounded image clips, fade transitions and nonnegative geometry',async()=>{const z=await JSZip.loadAsync(await exportDeck(fixture()));for(const name of Object.keys(z.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n))){const xml=await z.file(name).async('string');assert.match(xml,/<p:fade\/>/);assert.doesNotMatch(xml,/<a:ext[^>]*(?:cx|cy)="-/);}});

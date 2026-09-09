@@ -2,8 +2,11 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import PptxGenJS from "pptxgenjs";
+import JSZip from 'jszip';
+import {deduplicateMedia} from './pptx-media.mjs';
 import { renderStructured } from "./layouts.mjs";
 import { iconNames, iconData, astraLicense } from "./icons.mjs";
+import {renderBur,burLayouts} from './bur-layouts.mjs';
 export const root = path.dirname(fileURLToPath(import.meta.url));
 export const styles = JSON.parse(
   await fs.readFile(new URL("./public/styles.json", import.meta.url), "utf8"),
@@ -48,6 +51,7 @@ export function validate(deck) {
         "statement",
         "exercise",
         "comparison",
+        ...burLayouts,
       ].includes(s.layout)
     )
       throw Error("Nieznany layout.");
@@ -144,6 +148,11 @@ export async function exportDeck(input) {
   p.theme = { headFontFace: t.font, bodyFontFace: "Aptos", lang: "pl-PL" };
   d.slides.forEach((s, i) => {
     const slide = p.addSlide();
+    if(d.burEdition===true){
+      renderBur(slide,p,s,t,root,d,i);
+      slide.addNotes([s.voiceScript,s.notes,i===0?'Astra Icons — MIT\n'+astraLicense:''].filter(Boolean).join('\n\n'));
+      return;
+    }
     slide.background = { color: t.bg };
     const text = (v, x, y, w, h, size = 24, color = t.fg) =>
       slide.addText(v, {
@@ -162,13 +171,7 @@ export async function exportDeck(input) {
     if (s.image) {
       slide.addImage({
         path: path.join(root, "public", "assets", s.image),
-        ...p.imageSizingCrop(
-          path.join(root, "public", "assets", s.image),
-          6.8,
-          1.1,
-          5.85,
-          5.35,
-        ),
+        x:6.8,y:1.1,w:5.85,h:5.35,sizing:{type:"crop",w:5.85,h:5.35},
       });
       text(s.title, 0.65, 1.3, 5.65, 2, 34);
       text(s.points.join("\n\n"), 0.65, 3.6, 5.5, 2.5, 21);
@@ -299,5 +302,15 @@ export async function exportDeck(input) {
         .join("\n\n"),
     );
   });
-  return p.write({ outputType: "nodebuffer" });
+  const buffer=await p.write({ outputType: "nodebuffer" });
+  if(!input.burEdition)return buffer;
+  const zip=await JSZip.loadAsync(buffer);
+  for(const name of Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n))){
+   let xml=await zip.file(name).async('string');
+   xml=xml.replace(/<p:pic\b[\s\S]*?<\/p:pic>/g,pic=>pic.includes('BUR_ROUND')?pic.replace(/<a:prstGeom prst="rect">[\s\S]*?<\/a:prstGeom>/,'<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 6000"/></a:avLst></a:prstGeom>'):pic);
+   xml=xml.replace('</p:sld>','<p:transition spd="med"><p:fade/></p:transition></p:sld>');
+   zip.file(name,xml);
+  }
+  await deduplicateMedia(zip);
+  return zip.generateAsync({type:'nodebuffer',compression:'DEFLATE'});
 }

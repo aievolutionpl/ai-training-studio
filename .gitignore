@@ -11,3 +11,13 @@ public/assets/generated/
 *.pptx.trainer.md
 *.pptx.*.md
 .DS_Store
+
+# Private authored presentations and editable working copies
+*.pptx
+*.ppt
+*.pdf
+*.zip
+**/deck.json
+**/editor-drafts/
+**/editor-assets.json
+# Existing public reference templates remain tracked.

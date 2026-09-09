@@ -13,11 +13,11 @@ export function trainingReview(deck) {
   const issues = [];
   deck.slides.forEach((s, i) => {
     const n = words(s.voiceScript);
-    if (n < 120 || n > 280)
+    if (n < (deck.burEdition ? 25 : 120) || n > 280)
       issues.push({
         slide: i + 1,
         area: "script",
-        message: `Skrypt: ${n} słów. Cel: 120–280 słów (około 1–2 min przy 140 słowach/min).`,
+        message: `Skrypt: ${n} słów. Profil ${deck.burEdition ? 'BUR: zwięzłe objaśnienie w czasie slajdu' : 'standardowy: 120–280 słów'}.`,
       });
     if (!s.participantNotes?.trim())
       issues.push({
@@ -43,7 +43,7 @@ export function trainingReview(deck) {
       message: "Brak źródeł. Nie uznawaj faktów za zweryfikowane.",
     });
   const minutes = deck.slides.reduce(
-    (sum, s) => sum + words(s.voiceScript) / 140 + (s.activityMinutes || 0),
+    (sum, s) => sum + (deck.burEdition ? s.plannedMinutes : words(s.voiceScript) / 140 + (s.activityMinutes || 0)),
     0,
   );
   if (
@@ -63,7 +63,7 @@ export function trainingReview(deck) {
 }
 export function trainerScript(deck) {
   return (
-    `# ${deck.title}\n\nSkrypt do prowadzenia na żywo, nie nagranie audio. Czas to szacunek przy 140 słowach/min, plus ćwiczenia.\n\n` +
+    `# ${deck.title}\n\nSkrypt do prowadzenia na żywo, nie nagranie audio. ${deck.burEdition ? 'Profil BUR: czas zaplanowany obejmuje wypowiedź, pokaz, pytania i praktykę. Nie dodawaj czasu czytania po raz drugi. W M14 wskazówki padają podczas pracy uczestnika.' : 'Czas to szacunek przy 140 słowach/min, plus ćwiczenia.'}\n\n` +
     deck.slides
       .map(
         (s, i) =>
@@ -109,7 +109,7 @@ export function materials(deck) {
             `- ${s.title}: ${s.url} (dostęp: ${s.accessedAt})\n  Wspiera: ${s.supports}`,
         )
         .join("\n"),
-    "plan-szkolenia.md": `# Plan: ${deck.title}\n\nCel: ${deck.durationMinutes || "nie podano"} min.\n\n${deck.slides.map((s, i) => `${i + 1}. ${s.title} · ${s.layout} · ${(words(s.voiceScript) / 140 + (s.activityMinutes || 0)).toFixed(1)} min`).join("\n")}`,
+    "plan-szkolenia.md": `# Plan: ${deck.title}\n\nCel: ${deck.durationMinutes || "nie podano"} min. ${deck.burEdition ? `Teoria ${deck.theoryMinutes}, praktyka ${deck.practiceMinutes}. Czas praktyki zawiera instrukcje i omówienie ćwiczeń.` : ''}\n\n${deck.slides.map((s, i) => `${i + 1}. ${s.title} · ${s.layout} · ${(deck.burEdition ? s.plannedMinutes : words(s.voiceScript) / 140 + (s.activityMinutes || 0)).toFixed(1)} min`).join("\n")}`,
   };
   if (deck.quiz?.length) {
     result["test-uczestnika.md"] =
@@ -133,6 +133,13 @@ export function materials(deck) {
 }
 export function validateTraining(deck) {
   validate(deck);
+  if(deck.burEdition){
+    if(!/^M(0[1-9]|1[0-4])$/.test(deck.moduleId)||deck.slides.length!==20)throw Error('BUR: wymagany moduł M01–M14 i 20 slajdów.');
+    let total=0,practice=0;
+    for(const s of deck.slides){if(!Number.isFinite(s.plannedMinutes)||s.plannedMinutes<0||s.plannedMinutes<(s.activityMinutes||0))throw Error('BUR: nieprawidłowy czas slajdu.');total+=s.plannedMinutes;practice+=s.activityMinutes||0;}
+    if(Math.abs(total-deck.durationMinutes)>0.01||practice!==deck.practiceMinutes||Math.abs(total-practice-deck.theoryMinutes)>0.01)throw Error('BUR: czasy nie sumują się do deklaracji modułu.');
+    for(const k of ['bg','fg','accent','panel','highlight'])if(!/^[A-Fa-f0-9]{6}$/.test(deck.burTheme?.[k]||''))throw Error('BUR: nieprawidłowa paleta.');
+  }
   for (const s of deck.slides) {
     for (const field of ["voiceScript", "participantNotes"])
       if (

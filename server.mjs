@@ -1,4 +1,5 @@
 import http from "node:http";
+import {moduleScene,catalog,uploadAsset,saveDraft,loadDraft,exportScene} from './visual-editor.mjs';
 import fs from "node:fs/promises";
 import path from "node:path";
 import { spawn } from "node:child_process";
@@ -19,12 +20,12 @@ const jobs = new Map(),
   port = Number(process.env.PORT || 4317),
   projectRoot = path.join(root, "projects");
 await fs.mkdir(projectRoot, { recursive: true });
-async function body(req) {
+async function body(req, limit=1000000) {
   let size = 0,
     parts = [];
   for await (const c of req) {
     size += c.length;
-    if (size > 1000000) throw Error("Plik jest zbyt duży.");
+    if (size > limit) throw Error("Plik jest zbyt duży.");
     parts.push(c);
   }
   return JSON.parse(Buffer.concat(parts));
@@ -149,6 +150,7 @@ async function generate(brief) {
 const mime = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
+  ".mjs": "text/javascript; charset=utf-8",
   ".css": "text/css",
   ".json": "application/json",
   ".png": "image/png",
@@ -186,6 +188,35 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify(v));
     };
     if (url.pathname === "/api/styles") return json(styles);
+    if(url.pathname==='/api/editor/scene')return json(await moduleScene(url.searchParams.get('module')));
+    if(url.pathname==='/api/editor/assets'&&req.method==='GET')return json(await catalog());
+    if(url.pathname==='/api/editor/assets'&&req.method==='POST')return json(await uploadAsset(await body(req,12000000)));
+    if(url.pathname==='/api/editor/draft'&&req.method==='GET')return json(await loadDraft(url.searchParams.get('module')));
+    if(url.pathname==='/api/editor/draft'&&req.method==='POST')return json(await saveDraft(await body(req,15000000)));
+    if(url.pathname==='/api/editor/export'&&req.method==='POST'){res.setHeader('Content-Type',mime['.pptx']);return res.end(await exportScene(await body(req,15000000)));}
+    if(url.pathname.startsWith('/bur-download/')){
+      const name=url.pathname.slice('/bur-download/'.length);
+      if(!['zasoby.zip','AI_EVOLUTION_STUDIO_14_MODULOW.zip','README.md','AUDYT_2026-09-09.md','RESEARCH_2026-09-09.md'].includes(name))throw Error('Nieprawidłowy plik wydania.');
+      res.setHeader('Content-Type',name.endsWith('.zip')?'application/zip':'text/plain; charset=utf-8');
+      return res.end(await fs.readFile(path.join(projectRoot,'bur-2026-09-09',name)));
+    }
+    if(url.pathname==='/api/bur-modules'){
+      const modules=[];
+      for(let i=1;i<=14;i++){
+        const id='M'+String(i).padStart(2,'0');
+        try{await fs.access(path.join(projectRoot,'bur-2026-09-09',id,'deck.json'));}catch{continue;}
+        const deck=JSON.parse(await fs.readFile(path.join(projectRoot,'bur-2026-09-09',id,'deck.json'),'utf8'));
+        modules.push({id,title:deck.title,style:deck.style,minutes:deck.durationMinutes,result:deck.objectives[0]});
+      }
+      return json(modules);
+    }
+    if(url.pathname.startsWith('/bur-files/')){
+      const match=url.pathname.match(/^\/bur-files\/(M(?:0[1-9]|1[0-4]))\/(deck\.json|prezentacja\.pptx|pakiet-trenera\.zip|(?:skrypt-trenera|materialy-uczestnika|cwiczenia|slownik|zrodla|plan-szkolenia)\.md|native\/Slide(?:[1-9]|1\d|20)\.PNG)$/);
+      if(!match)throw Error('Nieprawidłowy plik modułu.');
+      const file=path.join(projectRoot,'bur-2026-09-09',match[1],match[2]);
+      res.setHeader('Content-Type',mime[path.extname(file).toLowerCase()]||'application/octet-stream');
+      return res.end(await fs.readFile(file));
+    }
     if (url.pathname === "/api/images/config")
       return json({
         falConfigured: Boolean(process.env.FAL_KEY),

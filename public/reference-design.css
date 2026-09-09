@@ -1,0 +1,9 @@
+/* The owner's Human First / Blueprint / Creative reference direction. */
+body{background:radial-gradient(ellipse at 65% 0,#ebe3fa,transparent 55%),#faf9fe;color:#192333}
+aside{background:#fdfbff;border-right-color:#ded3ed}
+button{border-radius:12px;transition:background .2s,box-shadow .2s}
+button:hover{box-shadow:0 3px 12px #68449b16}
+input,textarea,select{border-radius:10px!important;border-color:#d8cdeb!important}
+#stage{border-radius:20px;overflow:hidden;border:1px solid #cec0e5;box-shadow:0 12px 35px #49316812}
+.thumb{border-radius:12px;overflow:hidden}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
