@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Evolution — Presentation Studio</title>
+    <link rel="stylesheet" href="/app.css" />
+    <link rel="stylesheet" href="/training.css" />
+  </head>
+  <body>
+    <aside>
+      <a class="brand" href="/"
+        >✳ <span>AI EVOLUTION<small>PRESENTATION STUDIO</small></span></a
+      >
+      <div class="workspace">PRZESTRZEŃ TWÓRCZA</div>
+      <nav>
+        <button data-view="create" class="active">
+          ◈ &nbsp; Nowa prezentacja</button
+        ><button data-view="styles">▦ &nbsp; Biblioteka stylów <b>8</b></button
+        ><button data-view="editor">▤ &nbsp; Moja prezentacja</button
+        ><button data-view="guide">◇ &nbsp; Warsztat Codex</button>
+      </nav>
+      <div class="aside-bottom">
+        <span class="dot"></span> Pliki lokalnie na komputerze
+        <p>AI Evolution Polska<br />Twoje pomysły. Twój PowerPoint.</p>
+      </div>
+    </aside>
+    <main>
+      <header>
+        <span>Studio / <strong id="breadcrumb">Nowa prezentacja</strong></span
+        ><span class="pill">PPTX • EDYTOWALNY • OFFLINE</span>
+      </header>
+      <div id="content"></div>
+    </main>
+    <div id="toast" role="status"></div>
+    <dialog id="preview"></dialog>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

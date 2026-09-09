@@ -1,0 +1,16 @@
+{
+  "name": "ai-evolution-studio",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test",
+    "export": "node cli.mjs"
+  },
+  "dependencies": {
+    "@openai/codex": "^0.153.4",
+    "jszip": "^3.10.1",
+    "pptxgenjs": "^4.0.1"
+  }
+}

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "evolution",
+    "name": "AI Evolution",
+    "tag": "Signature",
+    "bg": "101131",
+    "fg": "FFFFFF",
+    "accent": "A38BFF",
+    "panel": "23234D",
+    "font": "Aptos",
+    "image": "evolution.png",
+    "desc": "Światło, przestrzeń i odważne idee."
+  },
+  {
+    "id": "editorial",
+    "name": "Editorial",
+    "tag": "Strategia",
+    "bg": "F4F0E8",
+    "fg": "242B29",
+    "accent": "D65B3B",
+    "panel": "E8E2D7",
+    "font": "Georgia",
+    "desc": "Papier, mocna typografia i spokojna pewność."
+  },
+  {
+    "id": "swiss",
+    "name": "Swiss Precision",
+    "tag": "Minimal",
+    "bg": "F8FAFC",
+    "fg": "142A4D",
+    "accent": "246BFE",
+    "panel": "E9EFF7",
+    "font": "Aptos",
+    "desc": "Precyzyjny układ. Maksimum czytelności."
+  },
+  {
+    "id": "noir",
+    "name": "Midnight",
+    "tag": "Keynote",
+    "bg": "111413",
+    "fg": "F1E9D2",
+    "accent": "D9BB78",
+    "panel": "252A26",
+    "font": "Georgia",
+    "desc": "Kinowy kontrast i szlachetne złoto."
+  },
+  {
+    "id": "human",
+    "name": "Human First",
+    "tag": "Zespół",
+    "bg": "F1EEE8",
+    "fg": "233E37",
+    "accent": "447D69",
+    "panel": "E0E7DE",
+    "font": "Aptos",
+    "image": "human.png",
+    "desc": "Ciepło, ludzie i praktyczna zmiana."
+  },
+  {
+    "id": "blueprint",
+    "name": "Blueprint",
+    "tag": "Technologia",
+    "bg": "122C50",
+    "fg": "E9F5FF",
+    "accent": "5BDCCB",
+    "panel": "1D4167",
+    "font": "Consolas",
+    "desc": "Architektury i procesy w technicznym rytmie."
+  },
+  {
+    "id": "pop",
+    "name": "Bold Ideas",
+    "tag": "Warsztat",
+    "bg": "F4F040",
+    "fg": "212021",
+    "accent": "6B3EEC",
+    "panel": "FFFFFF",
+    "font": "Aptos Display",
+    "desc": "Energia, duże komunikaty i aktywna nauka."
+  },
+  {
+    "id": "rose",
+    "name": "Soft Gradient",
+    "tag": "Nowoczesny",
+    "bg": "F8EDF1",
+    "fg": "462D48",
+    "accent": "A34D87",
+    "panel": "EFDAE8",
+    "font": "Aptos",
+    "desc": "Delikatna paleta i lekkość wizualna."
+  }
+]

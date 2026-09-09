@@ -1,0 +1,94 @@
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.check-row input {
+  width: 20px;
+  height: 20px;
+  accent-color: #5746b4;
+}
+.training-options {
+  border-left: 4px solid #5746b4;
+}
+.training-editor {
+  margin-top: 24px;
+}
+.training-editor textarea {
+  line-height: 1.7;
+  min-height: 150px;
+}
+.icon-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.icon-picker button {
+  min-width: 52px;
+  min-height: 48px;
+}
+.icon-picker img {
+  width: 26px;
+  height: 26px;
+}
+.icon-picker .chosen {
+  outline: 2px solid #5746b4;
+  background: #ece8ff;
+}
+.slide .slide-icon {
+  position: absolute !important;
+  inset: auto !important;
+  top: 8% !important;
+  right: 8% !important;
+  width: 6% !important;
+  height: 10% !important;
+  object-fit: contain !important;
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 2;
+}
+.slide .custom-illustration {
+  position: absolute !important;
+  inset: auto !important;
+  top: 15% !important;
+  right: 5% !important;
+  width: 44% !important;
+  height: 70% !important;
+  object-fit: cover !important;
+  border-radius: 12px;
+}
+.slide:has(.custom-illustration) h3,
+.slide:has(.custom-illustration) .slide-content {
+  max-width: 44%;
+}
+.slide:has(.custom-illustration) .slide-content {
+  display: block;
+}
+.slide:has(.custom-illustration) .slide-content > div {
+  padding: 8px;
+  background: none;
+}
+.slide:has(.custom-illustration) .slide-content b {
+  display: none;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #6652ce;
+  outline-offset: 4px;
+}
+@media (max-width: 700px) {
+  .training-editor .fields {
+    display: block;
+  }
+  .training-editor .actions {
+    align-items: stretch;
+    gap: 16px;
+    flex-direction: column;
+  }
+}
+.training-editor #voice-count {
+  display: inline-flex;
+  white-space: normal;
+}

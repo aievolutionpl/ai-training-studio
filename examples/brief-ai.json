@@ -1,0 +1,139 @@
+{
+  "title": "Jak przygotować i sprawdzić brief dla asystenta AI",
+  "style": "swiss",
+  "durationMinutes": 10,
+  "objectives": [
+    "Napisać brief zawierający cel, odbiorcę, dane wejściowe, format i kryteria odbioru.",
+    "Określić, co asystent ma zrobić, gdy w materiałach brakuje informacji.",
+    "Porównać odpowiedź z materiałem źródłowym i wskazać nieuzasadnione dopiski.",
+    "Sformułować konkretną poprawkę oraz zaplanować użycie schematu we własnym zadaniu."
+  ],
+  "sources": [
+    {
+      "title": "Anthropic: Prompting best practices",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+      "accessedAt": "2026-09-09",
+      "supports": [
+        "Dokumentacja zaleca jasne instrukcje oraz określenie oczekiwanego formatu i ograniczeń.",
+        "Wyjaśnienie kontekstu i celu pomaga ukierunkować odpowiedź.",
+        "Przykłady mogą wskazywać oczekiwany ton, format i strukturę.",
+        "Wyraźne rozdzielenie instrukcji, kontekstu i materiału wejściowego ułatwia ich interpretację."
+      ]
+    },
+    {
+      "title": "Google AI for Developers: Prompt design strategies",
+      "url": "https://ai.google.dev/gemini-api/docs/prompting-strategies",
+      "accessedAt": "2026-09-09",
+      "supports": [
+        "Dokumentacja zaleca konkretne instrukcje, ograniczenia i określenie formatu odpowiedzi.",
+        "W poleceniu można dostarczyć informacje potrzebne do wykonania zadania.",
+        "Tworzenie instrukcji jest procesem iteracyjnym: należy je doskonalić na podstawie otrzymanych odpowiedzi.",
+        "Dokumentacja pokazuje instrukcję ograniczającą odpowiedź do dostarczonego kontekstu i wymagającą wskazania braku informacji."
+      ]
+    }
+  ],
+  "glossary": [
+    {
+      "term": "Brief",
+      "definition": "Krótki opis zadania: co ma powstać, dla kogo, na jakiej podstawie i według jakich wymagań.",
+      "example": "Przygotuj dla pracowników wiadomość o zmianie sali, korzystając wyłącznie z podanej notatki."
+    },
+    {
+      "term": "Prompt",
+      "definition": "Polecenie przekazane asystentowi AI. Może zawierać brief i materiał potrzebny do pracy.",
+      "example": "Napisz projekt wiadomości według poniższego briefu. Materiał źródłowy znajduje się w osobnej sekcji."
+    },
+    {
+      "term": "Dane wejściowe",
+      "definition": "Informacje lub materiały, które asystent otrzymuje do wykonania zadania.",
+      "example": "Notatka: spotkanie odbędzie się w sali Brzoza zamiast w sali Dąb; godzina pozostaje bez zmian."
+    },
+    {
+      "term": "Kryteria odbioru",
+      "definition": "Warunki, które można sprawdzić, aby zdecydować, czy wynik nadaje się do użycia.",
+      "example": "Wiadomość poprawnie wskazuje obie sale, nie dodaje godziny i mieści się w ustalonym limicie."
+    },
+    {
+      "term": "Iteracja",
+      "definition": "Kolejna wersja instrukcji lub wyniku, przygotowana po sprawdzeniu poprzedniej.",
+      "example": "Po wykryciu dopisanej godziny prosisz o jej usunięcie i ponownie porównujesz wiadomość z notatką."
+    }
+  ],
+  "quiz": [],
+  "slides": [
+    {
+      "title": "Dobry brief pozwala sprawdzić, czy zadanie zostało wykonane",
+      "layout": "cover",
+      "points": [
+        "Zacznij od rezultatu, który ma wykorzystać konkretna osoba.",
+        "Opisz, po czym poznasz, że wynik nadaje się do użycia.",
+        "Przećwiczysz napisanie briefu i sprawdzenie odpowiedzi."
+      ],
+      "notes": "Czas orientacyjny: 1:05, bez aktywności uczestników. Przedstaw cel i przeczytaj voiceScript naturalnym tempem. Podkreśl, że wszystkie sytuacje, osoby i odpowiedzi w pakiecie są hipotetyczne; nie są wynikami testu narzędzia ani opisami wdrożeń. Schemat pięciu elementów i lista kontroli są autorską propozycją dydaktyczną, a nie standardem producenta. Źródło zasady jasności instrukcji i wyjaśniania celu: [Anthropic: Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices), dostęp 2026-09-09. Harmonogram całego modułu: około 5,5 min wypowiedzi przy 140 słowach/min oraz 4,5 min aktywności. Wystarczą kartka lub edytor tekstu; dostęp do asystenta nie jest potrzebny. Oprawa swiss: jasne tło, ciemny tekst, jeden kolor akcentu i wyraźna hierarchia typografii. Wszystkie treści pozostają edytowalne.",
+      "voiceScript": "Za chwilę przygotujemy krótkie zlecenie dla asystenta AI, czyli narzędzia wykorzystującego sztuczną inteligencję. Takie zlecenie będziemy nazywać briefem. Kiedy wpisujemy je do asystenta, staje się częścią promptu, czyli przekazanego mu polecenia. Nie trzeba zapamiętywać angielskiej nazwy, żeby dobrze wykonać zadanie.\n\nWyobraźmy sobie hipotetyczną sytuację. Marta z administracji chce poinformować pracowników o zmianie sali spotkania. Pisze: przygotuj profesjonalną wiadomość. Czy oczekuje krótkiego komunikatu na czacie, czy formalnego maila? Jakie informacje musi otrzymać pracownik, żeby trafić na spotkanie? Samo słowo profesjonalna tego nie rozstrzyga.\n\nW tym module będziemy pracować nad zleceniem, którego rezultat można ocenić. Marta określi odbiorców, poda ustalenia i wskaże wymagania. Później sprawdzi, czy wiadomość rzeczywiście je spełnia. To będzie nasz punkt odniesienia przez całe szkolenie.\n\nNajpierw zobaczycie gotowy przykład. Następnie napiszecie własny brief i ocenicie przygotowaną odpowiedź. Na końcu wybierzecie jedno zadanie ze swojej pracy. Efektem ma być krótki, użyteczny schemat zlecania i sprawdzania pracy, który będzie można ponownie wykorzystać przy następnej wiadomości lub notatce.",
+      "participantNotes": "Brief opisuje oczekiwany rezultat i warunki jego przyjęcia. Ogólne określenia, takie jak „profesjonalnie”, warto zastąpić wymaganiami możliwymi do sprawdzenia: odbiorca, rodzaj dokumentu, potrzebne informacje i ograniczenia. W hipotetycznym zadaniu administracyjnym celem wiadomości jest umożliwienie pracownikom dotarcia do właściwej sali. Ocena wyniku powinna więc obejmować przede wszystkim poprawność komunikatu o miejscu spotkania. Moduł prowadzi od przykładu briefu przez samodzielne przygotowanie zlecenia i kontrolę odpowiedzi do zastosowania schematu w pracy.",
+      "activityMinutes": 0,
+      "icon": "target"
+    },
+    {
+      "title": "Zapisz pięć elementów briefu przed uruchomieniem asystenta",
+      "layout": "process",
+      "points": [
+        "Cel i odbiorca: mail do pracowników o zmianie sali.",
+        "Dane: spotkanie w czwartek; Brzoza zamiast Dębu; godzina bez zmian.",
+        "Format: temat i treść do 70 słów, neutralnym językiem.",
+        "Odbiór: zgodność z notatką; braki zgłoś osobno; bez dopisanych ustaleń."
+      ],
+      "notes": "Czas orientacyjny: 1:10, bez aktywności uczestników. Pokaż pięć edytowalnych pól połączonych strzałkami: cel → odbiorca → dane → format → kryteria. Rozdziel cel i odbiorcę w diagramie, mimo że na slajdzie są w jednym punkcie. Nie twórz ilustracji rastrowej procesu. Gotowy brief do udostępnienia: „Napisz projekt maila informującego pracowników o zmianie sali spotkania. Materiał źródłowy: spotkanie jest w czwartek, w sali Brzoza zamiast Dąb; godzina pozostaje bez zmian. Zwróć temat oraz treść maila do 70 słów, neutralnym językiem. Zachowaj wszystkie podane ustalenia. Korzystaj wyłącznie z materiału źródłowego. Brakujące informacje zgłoś osobno autorowi, zamiast je uzupełniać”. Źródła: [Anthropic: Prompting best practices](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices), dostęp 2026-09-09, jasność, kontekst i format; [Google: Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies), dostęp 2026-09-09, ograniczenie odpowiedzi do kontekstu i wskazywanie braków. Limit 70 słów jest umownym wymaganiem ćwiczenia.",
+      "voiceScript": "Rozpiszmy teraz zlecenie Marty. W naszym hipotetycznym przykładzie notatka mówi: spotkanie jest w czwartek, w sali Brzoza zamiast Dąb, a godzina pozostaje bez zmian. Nie podaje konkretnej godziny ani powodu przeniesienia.\n\nCel brzmi: poinformować o nowej sali. Odbiorcami są pracownicy uczestniczący w spotkaniu. Dane to właśnie ta krótka notatka, którą oddzielamy od instrukcji nagłówkiem materiał źródłowy. Format określamy jako temat oraz treść maila do siedemdziesięciu słów, neutralnym językiem. Na koniec zapisujemy kryteria: wszystkie ustalenia mają się zgadzać, a wiadomość nie może zawierać nowych faktów.\n\nTak powstaje gotowe zlecenie. Napisz projekt maila do pracowników na podstawie podanej notatki. Zachowaj informacje o dniu, zmianie sali i niezmienionej godzinie. Zwróć temat oraz krótką treść. Brakujące informacje zgłoś osobno autorowi.\n\nZauważcie, że nie musimy znać konkretnej godziny, aby przekazać, że pozostaje bez zmian. To różnica między brakiem danych a przeszkodą w wykonaniu zadania. Przy ocenie sprawdzimy właśnie tę granicę. Informacja potrzebna do wiadomości jest dostępna, ale dodatkowe szczegóły nie zostały ustalone.",
+      "participantNotes": "Schemat briefu: cel — co ma powstać; odbiorca — kto wykorzysta wynik; dane — na czym należy się oprzeć; format — jak ma wyglądać odpowiedź; kryteria odbioru — co trzeba sprawdzić. Przykład hipotetyczny: „Napisz projekt maila do pracowników o zmianie sali. Materiał źródłowy: spotkanie w czwartek; Brzoza zamiast Dębu; godzina bez zmian. Zwróć temat i treść do 70 słów, neutralnym językiem. Zachowaj podane ustalenia. Nie dodawaj informacji spoza materiału. Braki zgłoś osobno autorowi”. Limit dotyczy treści maila. Nieznana godzina nie uniemożliwia przekazania informacji, że dotychczasowa godzina obowiązuje.",
+      "activityMinutes": 0,
+      "icon": "document"
+    },
+    {
+      "title": "Ćwiczenie 1: zamień ogólną prośbę w sprawdzalny brief",
+      "layout": "exercise",
+      "points": [
+        "Przypadek hipotetyczny: „Napisz wiadomość o warsztacie”. Odbiorcy: pracownicy biura.",
+        "Dane: piątek, sala Klon, udział dobrowolny. Godziny nie ustalono.",
+        "W 90 sekund napisz brief: cel, odbiorca, dane, format i kryteria odbioru.",
+        "Przez 30 sekund sprawdź, czy wiadomo, co zrobić z brakującą godziną."
+      ],
+      "notes": "Czas orientacyjny: 3:05, w tym 2 min aktywności. Najpierw wygłoś wprowadzenie do słów „Macie półtorej minuty na zapisanie briefu”, następnie uruchom 90 sekund pracy indywidualnej. Wygłoś pozostały fragment skryptu i daj 30 sekund na kontrolę w parze lub samodzielnie. Nie wymagaj korzystania z AI. Kryteria oceny pracy: obecność pięciu elementów, zachowanie faktów i jawna reguła postępowania z brakującą godziną. Przykładowe rozwiązanie tylko dla prowadzącego: „Napisz projekt wiadomości do pracowników biura, aby poinformować o dobrowolnym warsztacie. Dane: piątek, sala Klon, udział dobrowolny; godziny nie ustalono. Zwróć temat i treść do 60 słów. Zachowaj te ustalenia. Nie uzupełniaj godziny; osobno poproś autora o jej ustalenie przed wysłaniem”. Omówienie następuje na początku kolejnego slajdu. Ćwiczenie autorskie. Źródło zasady określania ograniczeń i formatu: [Google: Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies), dostęp 2026-09-09.",
+      "voiceScript": "Teraz przygotujecie własne zlecenie. To kolejny hipotetyczny przypadek: osoba z administracji ma zapowiedzieć warsztat dla pracowników biura. Wiemy, że odbędzie się w piątek, w sali Klon, a udział jest dobrowolny. Godziny jeszcze nie ustalono. Punktem wyjścia jest ogólna prośba: napisz wiadomość o warsztacie.\n\nWaszym zadaniem jest rozwinąć tę prośbę w brief. Wybierzcie konkretny format, na przykład mail albo komunikat na czacie. Określcie długość i wskażcie, jakie informacje muszą zostać zachowane. Dopiszcie również, co asystent ma zrobić z nieustaloną godziną. Przygotowujecie projekt wiadomości, więc możecie oddzielić tekst dla odbiorców od uwagi dla autora.\n\nNie potrzebujecie długiego opisu ani specjalnej roli eksperta. Potrzebujecie zlecenia, po którym będzie wiadomo, co sprawdzić. Macie półtorej minuty na zapisanie briefu.\n\nTeraz przeznaczcie pół minuty na kontrolę. Przeczytajcie brief drugiej osoby albo własny tekst. Poszukajcie pięciu elementów ze schematu. Zaznaczcie jedno miejsce, w którym asystent nadal musiałby zgadywać. Jeżeli takie miejsce znajdziecie, dopiszcie krótkie wyjaśnienie. Zostawcie gotowy brief przed sobą, przyda się do podsumowania.",
+      "participantNotes": "Ćwiczenie: przygotuj brief dla hipotetycznej zapowiedzi warsztatu dla pracowników biura. Dostępne informacje: piątek, sala Klon, udział dobrowolny, godzina nieustalona. Określ cel wiadomości, odbiorców, materiał źródłowy, format i warunki odbioru. Zdecyduj, jak asystent powinien zasygnalizować brak informacji. Na napisanie briefu przeznacz 90 sekund, a na sprawdzenie jego kompletności 30 sekund. Rezultatem jest samodzielny tekst zlecenia, który można przekazać wraz z danymi wejściowymi.",
+      "activityMinutes": 2,
+      "icon": "group"
+    },
+    {
+      "title": "Ćwiczenie 2: porównaj wynik z danymi, zanim go przyjmiesz",
+      "layout": "exercise",
+      "points": [
+        "Dane hipotetyczne: piątek, sala Klon, udział dobrowolny; godziny nie ustalono.",
+        "Wynik do oceny: „Zapraszamy w piątek o 10:00 do sali Klon. Obecność obowiązkowa. Zapewniamy lunch”.",
+        "Przez 60 sekund wskaż rozbieżności, napisz poprawkę i zdecyduj: przyjąć czy poprawić.",
+        "Przez kolejne 60 sekund porównajcie ustalenia i sprawdźcie, co trzeba zweryfikować ponownie."
+      ],
+      "notes": "Czas orientacyjny: 3:05, w tym 2 min aktywności. Najpierw krótko omów poprzednie zadanie za pomocą początku voiceScript. Zatrzymaj skrypt po słowach „Macie na to minutę” i daj 60 sekund pracy. Następnie przeznacz 60 sekund na porównanie ustaleń uczestników, w parach lub na forum. Pozostałe zdania skryptu wygłoś po aktywności. Klucz wyłącznie dla prowadzącego: 10:00 jest dopisaną godziną; obowiązkowość przeczy dobrowolności; lunch nie ma podstawy w danych. Decyzja: poprawić. Przykładowa instrukcja naprawcza: „Usuń godzinę 10:00 i informację o lunchu. Zmień obowiązkowy udział na dobrowolny. Zachowaj piątek i salę Klon. Osobno zaznacz, że autor musi ustalić godzinę przed wysłaniem”. Ponownie sprawdzić zgodność ze źródłem, kompletność oraz wymagany format. Odpowiedź na slajdzie jest celowo napisaną próbką dydaktyczną, a nie autentycznym wynikiem modelu. Źródło zasady doskonalenia instrukcji na podstawie wyników: [Google: Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies), dostęp 2026-09-09. Lista kontroli i klucz są autorskie.",
+      "voiceScript": "W poprzednim ćwiczeniu najważniejsze było doprecyzowanie zlecenia, szczególnie sposobu obsługi nieustalonej godziny. Jeżeli brief mówił tylko napisz krótko i profesjonalnie, warto dopisać warunki, które da się sprawdzić. Teraz przechodzimy do odbioru pracy.\n\nNa slajdzie widzicie hipotetyczną odpowiedź przygotowaną specjalnie do ćwiczenia. Nie pochodzi z testu konkretnego narzędzia. Czytamy ją obok danych wejściowych. Najpierw sprawdzamy zgodność informacji. Potem kompletność, czyli to, czy zachowano ważne ustalenia. Na końcu oceniamy format i język. W tej próbce skupimy się na informacjach.\n\nPrzy każdym szczególe ustalcie, czy wynika ze źródła, przeczy mu, czy został dodany bez podstawy. Następnie napiszcie krótką instrukcję poprawy i zdecydujcie, czy wiadomość można już przyjąć. Macie na to minutę.\n\nPorównajcie teraz swoje ustalenia. Przy różnicy zdań wróćcie do notatki, która jest wspólnym punktem odniesienia. Zwróćcie uwagę, czy wasza poprawka wskazuje konkretny fragment oraz oczekiwaną zmianę. Samo polecenie popraw błędy nie mówi, jaki rezultat chcecie otrzymać. Po otrzymaniu kolejnej wersji trzeba jeszcze raz sprawdzić te same warunki, również informacje, które wcześniej były poprawne.",
+      "participantNotes": "Kontrola odpowiedzi obejmuje zgodność ze źródłem, kompletność oraz wymagany format. Każdy szczegół można przypisać do kategorii: potwierdzony, sprzeczny lub niepodany w materiale. Zadanie: porównaj dane „piątek, sala Klon, udział dobrowolny, godzina nieustalona” z hipotetycznym tekstem „Zapraszamy w piątek o 10:00 do sali Klon. Obecność obowiązkowa. Zapewniamy lunch”. Wskaż rozbieżności, napisz polecenie poprawy i podejmij decyzję o przyjęciu wyniku. Po zmianie ponownie zastosuj pełną listę kontroli. Poprawka powinna wskazywać fragment, oczekiwaną zmianę i informacje, które należy zachować.",
+      "activityMinutes": 2,
+      "icon": "search"
+    },
+    {
+      "title": "Plan działania: brief → kontrola → poprawka → ponowna kontrola",
+      "layout": "process",
+      "points": [
+        "Przed zleceniem: zapisz pięć elementów briefu.",
+        "Po odpowiedzi: sprawdź fakty, kompletność i format.",
+        "Po poprawce: ponownie porównaj całość z kryteriami.",
+        "W 30 sekund zapisz: zadanie, termin zastosowania i najważniejsze kryterium."
+      ],
+      "notes": "Czas orientacyjny: 1:35, w tym 30 sekund aktywności. Wygłoś voiceScript do zaproszenia do zapisania planu, daj 30 sekund pracy, następnie zakończ ostatnim akapitem. Plan ma zawierać konkretne zadanie, termin i sprawdzalny warunek; uczestnicy nie muszą odczytywać go na forum. Diagram wykonaj z natywnych pól i strzałek, z powrotem od poprawki do kontroli. Nie dodawaj testu końcowego. Zakończenie stanowi omówienie kontroli oraz przeniesienie metody do pracy. Źródło zasady iteracyjnego doskonalenia: [Google: Prompt design strategies](https://ai.google.dev/gemini-api/docs/prompting-strategies), dostęp 2026-09-09. Plan działania i kryteria odbioru są propozycją dydaktyczną. Łączny plan slajdów wynosi 10 minut; rzeczywisty czas wypowiedzi zależy od tempa prowadzącego. Badanie źródeł obejmowało oficjalne poradniki tworzenia instrukcji; nie przeprowadzano porównania modeli ani pomiarów skuteczności.",
+      "voiceScript": "Zamknijmy przykład z warsztatem. Przy odbiorze zauważyliśmy trzy rodzaje problemu: dopisaną godzinę, zmianę dobrowolnego udziału na obowiązkowy oraz obietnicę lunchu bez podstawy. Każdy z nich wymaga konkretnej korekty. Nawet po poprawieniu wiadomości pozostaje sprawa organizacyjna: autor musi ustalić godzinę przed wysłaniem pełnego zaproszenia.\n\nTeraz przenieśmy schemat do innego hipotetycznego zadania. Tomasz przygotowuje notatkę po spotkaniu zespołu. W briefie określa odbiorcę i prosi o tabelę z zadaniem, osobą odpowiedzialną oraz terminem. Jako kryterium przyjmuje, że każda osoba i każda data muszą wynikać z zapisu spotkania. Jeśli terminu nie ustalono, tabela ma to jasno pokazać. Dzięki temu Tomasz wie, czego szukać podczas sprawdzania.\n\nWybierzcie teraz jedno własne zadanie. Zapiszcie, kiedy zastosujecie schemat i który warunek sprawdzicie szczególnie uważnie. Możecie użyć zdania: przy następnym podsumowaniu spotkania sprawdzę każdą przypisaną odpowiedzialność w notatkach. Macie trzydzieści sekund.\n\nZostajemy z prostą kolejnością pracy: opisać oczekiwany rezultat, porównać odpowiedź z wymaganiami, wskazać potrzebną zmianę i sprawdzić ponownie. Gotowy brief oraz lista kontroli mogą posłużyć jako punkt wyjścia przy kolejnym podobnym zadaniu.",
+      "participantNotes": "Powtarzalny sposób pracy obejmuje przygotowanie briefu, kontrolę wyniku, konkretną poprawkę i ponowną kontrolę. Dla każdego zadania warto określić najważniejszy warunek odbioru. W hipotetycznej notatce ze spotkania może nim być zgodność przypisanych osób i terminów z zapisem rozmowy. Plan zastosowania: „Moje zadanie: …; zastosuję schemat: …; szczególnie sprawdzę: …”. Zachowaj brief wraz z listą kontroli, aby wykorzystać je przy podobnym zadaniu. Dobry rezultat spełnia wymagania dotyczące treści i formatu oraz przechodzi sprawdzenie przed użyciem.",
+      "activityMinutes": 0.5,
+      "icon": "check-circle"
+    }
+  ]
+}

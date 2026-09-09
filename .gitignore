@@ -1,0 +1,13 @@
+node_modules/
+projects/
+output/
+.env
+public/assets/generated/
+*.log
+.env.*
+!.env.example
+*.training.zip
+*.pptx.review.json
+*.pptx.trainer.md
+*.pptx.*.md
+.DS_Store

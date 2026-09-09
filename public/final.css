@@ -1,0 +1,10 @@
+.slide {
+  font-family: var(--font), "Segoe UI", Arial, sans-serif;
+}
+.slide[data-style="editorial"],
+.slide[data-style="noir"] {
+  font-family: Georgia, serif;
+}
+.slide[data-style="blueprint"] {
+  font-family: Consolas, monospace;
+}
