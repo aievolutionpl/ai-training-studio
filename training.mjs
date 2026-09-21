@@ -2,6 +2,7 @@ import JSZip from "jszip";
 import { astraLicense } from "./icons.mjs";
 import { exportDeck, validate } from "./engine.mjs";
 import { review } from "./quality.mjs";
+import { splitPoint } from "./public/palette.mjs";
 
 export const words = (text) =>
   String(text || "")
@@ -9,54 +10,72 @@ export const words = (text) =>
     .split(/\s+/u)
     .filter(Boolean).length;
 const list = (items) => items.map((x) => `- ${x}`).join("\n");
+// Bullets are stored as "Hasło:: wyjaśnienie" for the renderer; documents read better as prose.
+const prose = (points) => (points || []).map((p) => splitPoint(p).filter(Boolean).join(": "));
 export function trainingReview(deck) {
   const issues = [];
+  const add = (slide, area, message) => issues.push({ slide, area, message });
   deck.slides.forEach((s, i) => {
     const n = words(s.voiceScript);
     if (n < (deck.burEdition ? 25 : 120) || n > 280)
-      issues.push({
-        slide: i + 1,
-        area: "script",
-        message: `Skrypt: ${n} słów. Profil ${deck.burEdition ? 'BUR: zwięzłe objaśnienie w czasie slajdu' : 'standardowy: 120–280 słów'}.`,
-      });
-    if (!s.participantNotes?.trim())
-      issues.push({
-        slide: i + 1,
-        area: "materials",
-        message: "Brak objaśnienia dla uczestnika.",
-      });
+      add(
+        i + 1,
+        "script",
+        `Skrypt: ${n} słów. Profil ${deck.burEdition ? "BUR: zwięzłe objaśnienie w czasie slajdu" : "standardowy: 120–280 słów"}.`,
+      );
+    if (!s.participantNotes?.trim()) add(i + 1, "materials", "Brak objaśnienia dla uczestnika.");
+    else if (words(s.participantNotes) < 25)
+      add(i + 1, "materials", "Objaśnienie dla uczestnika jest za krótkie, żeby działać bez trenera.");
     if (
-      /w dzisiejszym dynamicznym|rewolucjonizuje|game.changer|odkryj potencjał|w erze cyfrowej/i.test(
+      /w dzisiejszym dynamicznym|rewolucjonizuje|game.changer|odkryj potencjał|w erze cyfrowej|przełomow|must.have|synerg/i.test(
         s.voiceScript || "",
       )
     )
-      issues.push({
-        slide: i + 1,
-        area: "language",
-        message: "Zastąp ogólnik konkretnym przykładem.",
-      });
+      add(i + 1, "language", "Zastąp ogólnik konkretnym przykładem.");
+    // A script that teaches names someone or something measurable.
+    if (n >= 60 && !/\d/.test(s.voiceScript || "") && !/przykład|na przykład|załóżmy|wyobraź/i.test(s.voiceScript || ""))
+      add(i + 1, "script", "Skrypt bez przykładu ani liczby — dodaj konkretną sytuację z pracy.");
+    if (/(odpowiedź|klucz|poprawna) (to|brzmi|jest)/i.test(s.participantNotes || ""))
+      add(i + 1, "materials", "Materiał uczestnika zawiera klucz odpowiedzi.");
+    if (s.layout === "exercise" && !(s.activityMinutes > 0))
+      add(i + 1, "timing", "Ćwiczenie bez zaplanowanego czasu pracy.");
   });
   if (!deck.sources?.length)
-    issues.push({
-      slide: null,
-      area: "research",
-      message: "Brak źródeł. Nie uznawaj faktów za zweryfikowane.",
-    });
+    add(null, "research", "Brak źródeł. Nie uznawaj faktów za zweryfikowane.");
+  if (!deck.objectives?.length) add(null, "materials", "Brak celów szkolenia w deck.objectives.");
+  else if (deck.objectives.length < 3)
+    add(null, "materials", "Podaj 3–5 celów opisanych jako obserwowalne umiejętności.");
+  if (!deck.glossary?.length)
+    add(null, "materials", "Pusty słownik — wyjaśnij pojęcia użyte na slajdach.");
+  if (deck.quiz?.length) {
+    const spread = new Set(deck.quiz.map((q) => q.correctIndex)).size;
+    if (deck.quiz.length >= 4 && spread < 2)
+      add(null, "assessment", "Poprawne odpowiedzi w teście stoją w jednej kolumnie.");
+  }
+  const activity = deck.slides.reduce((sum, s) => sum + (s.activityMinutes || 0), 0);
   const minutes = deck.slides.reduce(
-    (sum, s) => sum + (deck.burEdition ? s.plannedMinutes : words(s.voiceScript) / 140 + (s.activityMinutes || 0)),
+    (sum, s) =>
+      sum + (deck.burEdition ? s.plannedMinutes : words(s.voiceScript) / 140 + (s.activityMinutes || 0)),
     0,
   );
   if (
     deck.durationMinutes &&
     Math.abs(minutes - deck.durationMinutes) > deck.durationMinutes * 0.2
   )
-    issues.push({
-      slide: null,
-      area: "timing",
-      message: `Szacowany czas ${minutes.toFixed(1)} min odbiega od celu ${deck.durationMinutes} min.`,
-    });
+    add(
+      null,
+      "timing",
+      `Szacowany czas ${minutes.toFixed(1)} min odbiega od celu ${deck.durationMinutes} min.`,
+    );
+  if (deck.durationMinutes && activity < deck.durationMinutes * 0.15)
+    add(
+      null,
+      "timing",
+      `Praca własna zajmuje ${activity} min z ${deck.durationMinutes}. Zaplanuj co najmniej 15% czasu na ćwiczenia.`,
+    );
   return {
     estimatedMinutes: Math.round(minutes * 10) / 10,
+    activityMinutes: activity,
     wordsPerMinute: 140,
     issues,
   };
@@ -78,7 +97,7 @@ export function participantGuide(deck) {
     deck.slides
       .map(
         (s, i) =>
-          `## ${i + 1}. ${s.title}\n\n${list(s.points)}\n\n${s.participantNotes || "[Objaśnienie do uzupełnienia]"}${s.layout === "exercise" ? "\n\n**Twoje rozwiązanie:**\n\n......................................................................" : ""}`,
+          `## ${i + 1}. ${s.title}\n\n${list(prose(s.points))}\n\n${s.participantNotes || "[Objaśnienie do uzupełnienia]"}${s.layout === "exercise" ? "\n\n**Twoje rozwiązanie:**\n\n......................................................................" : ""}`,
       )
       .join("\n\n")
   );
@@ -98,7 +117,7 @@ export function materials(deck) {
         .filter((s) => s.layout === "exercise")
         .map(
           (s) =>
-            `## ${s.title}\n\n${list(s.points)}\n\nCzas: ${s.activityMinutes || "do ustalenia"} min\n\nWynik pracy:\n\n................................................\n\nJak sprawdzisz wynik?\n\n................................................`,
+            `## ${s.title}\n\n${list(prose(s.points))}\n\nCzas: ${s.activityMinutes || "do ustalenia"} min\n\nWynik pracy:\n\n................................................\n\nJak sprawdzisz wynik?\n\n................................................`,
         )
         .join("\n\n"),
     "zrodla.md":

@@ -1,0 +1,510 @@
+/* Preview of an exported slide. Sizes use container query units so thumbnails and
+   the full-size stage share one set of rules. */
+.pslide {
+  aspect-ratio: 16/9;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font), "Segoe UI", Arial, sans-serif;
+  container-type: inline-size;
+  padding: 5.4% 5.4% 4.6%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.pslide[data-style="editorial"],
+.pslide[data-style="noir"] {
+  font-family: Georgia, "Times New Roman", serif;
+}
+.pslide[data-style="blueprint"] {
+  font-family: Consolas, "Courier New", monospace;
+}
+.ps-orb {
+  position: absolute;
+  right: -4cqw;
+  top: -8cqw;
+  width: 19cqw;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--soft);
+  opacity: 0.65;
+}
+.ps-head {
+  display: flex;
+  align-items: center;
+  gap: 1.4cqw;
+  position: relative;
+}
+.ps-mark-chip {
+  width: 3.3cqw;
+  height: 3.3cqw;
+  border-radius: 0.6cqw;
+  background: var(--accent);
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.ps-mark-chip .ps-icon {
+  width: 1.9cqw;
+  filter: brightness(0) invert(1);
+}
+.pslide .ps-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.ps-kicker {
+  font-size: 1.32cqw;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-family: Aptos, "Segoe UI", sans-serif;
+}
+.ps-num {
+  margin-left: auto;
+  font-size: 1.25cqw;
+  color: var(--muted);
+  font-family: Aptos, "Segoe UI", sans-serif;
+}
+.pslide h3 {
+  font-size: 4cqw;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 2.2cqw 0 0;
+  font-weight: 700;
+  position: relative;
+}
+.ps-rule {
+  display: block;
+  width: 8.3cqw;
+  height: 0.42cqw;
+  background: var(--accent);
+  margin: 1.1cqw 0 0;
+  flex: none;
+}
+.ps-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.1cqw;
+  padding: 1.6cqw 0;
+  min-height: 0;
+  font-family: Aptos, "Segoe UI", sans-serif;
+}
+.pslide[data-style="editorial"] .ps-body,
+.pslide[data-style="noir"] .ps-body,
+.pslide[data-style="blueprint"] .ps-body {
+  font-family: inherit;
+}
+.ps-badge {
+  width: 4.2cqw;
+  height: 4.2cqw;
+  border-radius: 50%;
+  background: var(--soft);
+  display: grid;
+  place-items: center;
+  flex: none;
+  padding: 1.1cqw;
+}
+.ps-badge .ps-icon {
+  filter: none;
+}
+.ps-card {
+  background: var(--panel);
+  border: 0.1cqw solid var(--line);
+  border-radius: 0.6cqw;
+  padding: 1.6cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8cqw;
+  min-width: 0;
+}
+.ps-card b {
+  font-size: 2.1cqw;
+  line-height: 1.2;
+}
+.ps-card span {
+  font-size: 1.7cqw;
+  line-height: 1.35;
+  color: var(--muted);
+}
+.ps-cards {
+  display: flex;
+  gap: 1.4cqw;
+  flex: 1;
+}
+.ps-cards .ps-card {
+  flex: 1;
+  border-top: 0.45cqw solid var(--accent);
+}
+.ps-cards .ps-card:nth-child(even) {
+  background: var(--panel-alt);
+}
+.ps-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ps-card-top i {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent);
+  font-size: 1.8cqw;
+}
+.ps-steps {
+  display: flex;
+  gap: 1.1cqw;
+  flex: 1;
+}
+.ps-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1cqw;
+  position: relative;
+  min-width: 0;
+}
+.ps-step::after {
+  content: "";
+  position: absolute;
+  top: 3.1cqw;
+  left: 50%;
+  width: calc(100% + 1.1cqw);
+  height: 0.16cqw;
+  background: var(--line);
+  z-index: 0;
+}
+.ps-step:last-child::after {
+  display: none;
+}
+.ps-step > i {
+  width: 6.2cqw;
+  height: 6.2cqw;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 2cqw;
+  position: relative;
+  z-index: 1;
+  flex: none;
+}
+.ps-step:nth-child(even) > i {
+  background: var(--panel);
+  color: var(--accent);
+}
+.ps-step .ps-card {
+  flex: 1;
+}
+.ps-step:nth-child(even) .ps-card {
+  background: var(--panel-alt);
+}
+.ps-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8cqw;
+  flex: 1;
+  justify-content: center;
+}
+.ps-row {
+  display: flex;
+  align-items: center;
+  gap: 1.1cqw;
+  min-width: 0;
+}
+.ps-row b {
+  font-size: 2cqw;
+  color: var(--accent);
+  flex: none;
+}
+.ps-row span {
+  font-size: 1.8cqw;
+  color: var(--muted);
+  line-height: 1.3;
+}
+.ps-split .ps-row {
+  background: var(--panel);
+  border: 0.1cqw solid var(--line);
+  border-radius: 0.6cqw;
+  padding: 1.1cqw 1.4cqw;
+}
+.ps-split .ps-row:nth-child(even) {
+  background: var(--panel-alt);
+}
+.ps-split .ps-row b {
+  width: 22%;
+}
+.ps-split .ps-row span {
+  border-left: 0.1cqw solid var(--line);
+  padding-left: 1.4cqw;
+  flex: 1;
+}
+.ps-quote {
+  background: var(--panel-alt);
+  border-left: 0.6cqw solid var(--accent);
+  border-radius: 0 0.6cqw 0.6cqw 0;
+  padding: 1.8cqw 2cqw;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1cqw;
+  justify-content: center;
+}
+.ps-quote-icon {
+  width: 3.2cqw;
+  height: 3.2cqw;
+  display: block;
+}
+.ps-quote p {
+  font-size: 2.9cqw;
+  line-height: 1.22;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0;
+  font-family: var(--font), "Segoe UI", sans-serif;
+}
+.ps-note {
+  display: flex;
+  align-items: center;
+  gap: 1.1cqw;
+  font-size: 1.7cqw;
+  color: var(--muted);
+}
+.ps-exercise {
+  display: flex;
+  gap: 1.4cqw;
+  flex: 1;
+}
+.ps-timebox {
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: 0.6cqw;
+  padding: 1.6cqw;
+  width: 24%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4cqw;
+  flex: none;
+}
+.ps-timebox b {
+  font-size: 5cqw;
+  line-height: 1;
+}
+.ps-timebox span {
+  font-size: 1.4cqw;
+  opacity: 0.85;
+}
+.ps-timebox strong {
+  font-size: 2.1cqw;
+  margin-top: auto;
+  line-height: 1.15;
+}
+.ps-steps-list {
+  flex: 1;
+}
+.ps-steps-list .ps-row {
+  background: var(--panel);
+  border: 0.1cqw solid var(--line);
+  border-radius: 0.6cqw;
+  padding: 1cqw 1.4cqw;
+}
+.ps-steps-list .ps-row:nth-child(even) {
+  background: var(--panel-alt);
+}
+.ps-steps-list .ps-row b {
+  color: var(--fg);
+  font-weight: 700;
+  font-size: 1.85cqw;
+}
+.ps-steps-list .ps-row span {
+  flex: 1;
+  color: var(--fg);
+  font-size: 1.85cqw;
+}
+.ps-evidence,
+.ps-image-layout {
+  display: flex;
+  gap: 1.4cqw;
+  flex: 1;
+}
+.ps-evidence > .ps-card {
+  width: 40%;
+  border-top: 0.45cqw solid var(--accent);
+  background: var(--panel-alt);
+}
+.ps-evidence > .ps-card p {
+  font-size: 2.3cqw;
+  line-height: 1.3;
+  margin: 0;
+  font-family: var(--font), "Segoe UI", sans-serif;
+}
+.ps-evidence > .ps-rows {
+  flex: 1;
+}
+.ps-decision {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4cqw;
+  flex: 1;
+  align-items: center;
+}
+.ps-root {
+  width: 58%;
+  align-items: center;
+  font-size: 2cqw;
+  font-weight: 700;
+  background: var(--panel-alt);
+  border-top: 0.3cqw solid var(--accent);
+  text-align: center;
+}
+.ps-branches {
+  display: flex;
+  gap: 1.1cqw;
+  width: 100%;
+  flex: 1;
+}
+.ps-branches .ps-card {
+  flex: 1;
+}
+.ps-branches .ps-card:nth-child(even) {
+  background: var(--panel-alt);
+}
+.ps-photo {
+  width: 46%;
+  border-radius: 0.6cqw;
+  object-fit: cover;
+  flex: none;
+}
+.ps-photo-empty {
+  background: var(--panel);
+  border: 0.1cqw dashed var(--line);
+}
+.ps-foot {
+  display: flex;
+  align-items: center;
+  gap: 1.2cqw;
+  flex-wrap: wrap;
+  padding-top: 1cqw;
+  border-top: 0.16cqw solid var(--line);
+  position: relative;
+  font-family: Aptos, "Segoe UI", sans-serif;
+}
+.ps-progress {
+  position: absolute;
+  top: -0.16cqw;
+  left: 0;
+  width: 100%;
+  height: 0.16cqw;
+}
+.ps-progress i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.ps-brand {
+  font-size: 1.1cqw;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+.ps-activity {
+  margin-left: auto;
+  font-size: 1.1cqw;
+  font-weight: 700;
+  color: var(--accent);
+}
+/* ---------------------------------------------------------------- cover */
+.ps-cover {
+  justify-content: center;
+}
+.ps-cover-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ps-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--bg) 94%, transparent) 46%,
+    color-mix(in srgb, var(--bg) 60%, transparent) 54%,
+    transparent 62%
+  );
+}
+.ps-mark {
+  position: absolute;
+  right: 5.4%;
+  top: 11%;
+  width: 35%;
+  height: 78%;
+  background: var(--panel);
+  border: 0.1cqw solid var(--line);
+  border-radius: 2.7cqw;
+  display: grid;
+  place-items: center;
+}
+.ps-ring {
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 0.3cqw solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.ps-dot {
+  position: absolute;
+  right: 8%;
+  top: 8%;
+  width: 18%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.ps-cover-body {
+  position: relative;
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.ps-chip {
+  align-self: flex-start;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 1.25cqw;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  padding: 0.9cqw 1.6cqw;
+  border-radius: 0.5cqw;
+  margin-bottom: 3.4cqw;
+  font-family: Aptos, "Segoe UI", sans-serif;
+}
+.ps-cover h3 {
+  font-size: 5.6cqw;
+  margin: 0;
+}
+.ps-cover .ps-rule {
+  margin: 2cqw 0 1.6cqw;
+}
+.ps-cover p {
+  font-size: 2cqw;
+  color: var(--muted);
+  margin: 0;
+  font-family: Aptos, "Segoe UI", sans-serif;
+}
+.ps-cover-foot {
+  position: absolute;
+  left: 5.4%;
+  bottom: 4.6%;
+  font-size: 1.25cqw;
+  color: var(--muted);
+  font-family: Aptos, "Segoe UI", sans-serif;
+}

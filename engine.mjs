@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import PptxGenJS from "pptxgenjs";
 import JSZip from 'jszip';
 import {deduplicateMedia} from './pptx-media.mjs';
-import { renderStructured } from "./layouts.mjs";
+import { renderSlide, genericLayouts } from "./layouts.mjs";
 import { iconNames, iconData, astraLicense } from "./icons.mjs";
 import {renderBur,burLayouts} from './bur-layouts.mjs';
 export const root = path.dirname(fileURLToPath(import.meta.url));
@@ -43,18 +43,15 @@ export function validate(deck) {
   for (const s of deck.slides) {
     if (typeof s.title !== "string" || s.title.length > 120)
       throw Error("Tytuł slajdu: maksymalnie 120 znaków.");
-    if (
-      ![
-        "cover",
-        "cards",
-        "process",
-        "statement",
-        "exercise",
-        "comparison",
-        ...burLayouts,
-      ].includes(s.layout)
-    )
+    if (![...genericLayouts, ...burLayouts].includes(s.layout))
       throw Error("Nieznany layout.");
+    if (s.kicker !== undefined && (typeof s.kicker !== "string" || s.kicker.length > 60))
+      throw Error("Nadtytuł: maksymalnie 60 znaków.");
+    if (
+      s.exerciseLabel !== undefined &&
+      (typeof s.exerciseLabel !== "string" || s.exerciseLabel.length > 40)
+    )
+      throw Error("Etykieta ćwiczenia: maksymalnie 40 znaków.");
     if (
       !Array.isArray(s.points) ||
       s.points.length > 4 ||
@@ -66,73 +63,96 @@ export function validate(deck) {
   return deck;
 }
 export function demo(style = "evolution") {
+  // Built-in example: shows the layout set and the "Hasło:: wyjaśnienie" bullet format.
   const topics = [
     [
       "AI w codziennej pracy firmy",
       "cover",
-      ["Od pomysłu do pierwszego zastosowania"],
+      ["Od pierwszego zadania do sprawdzonego wyniku"],
+      { kicker: "warsztat wprowadzający" },
     ],
     [
       "Najpierw problem, potem narzędzie",
       "statement",
-      ["Wybierz zadanie, którego efekt potrafisz sprawdzić."],
+      [
+        "Wybierz zadanie, którego efekt potrafisz sprawdzić w pięć minut.",
+        "Kryterium:: jeśli nie umiesz ocenić wyniku, nie umiesz go wdrożyć",
+      ],
+      { kicker: "zasada modułu", icon: "target" },
     ],
     [
-      "Trzy role AI w zespole",
+      "Trzy role asystenta w zespole",
       "cards",
       [
-        "Asystent: przygotowuje pierwszą wersję",
-        "Analityk: porządkuje i porównuje informacje",
-        "Partner: proponuje alternatywy",
+        "Asystent:: pisze pierwszą wersję tekstu, którą i tak redagujesz",
+        "Analityk:: porządkuje i porównuje informacje z kilku dokumentów",
+        "Partner:: proponuje warianty, gdy utkniesz na jednym pomyśle",
       ],
+      { icon: "group" },
     ],
     [
-      "Dobry brief daje lepszy wynik",
+      "Dobry brief skraca liczbę poprawek",
       "process",
-      ["Cel i odbiorca", "Kontekst i dane", "Format wyniku", "Kryteria oceny"],
+      [
+        "Cel:: co ma powstać i dla kogo",
+        "Kontekst:: dane, ograniczenia i ton wypowiedzi",
+        "Format:: długość, struktura i język wyniku",
+        "Kryteria:: po czym poznasz, że wynik nadaje się do użycia",
+      ],
+      { icon: "document" },
     ],
     [
-      "Automatyzacja wymaga kontroli",
+      "Podział pracy między człowieka i model",
       "comparison",
       [
-        "AI: szkic, analiza, warianty",
-        "Człowiek: ocena, decyzja, odpowiedzialność",
+        "Model:: szkic, warianty, porządkowanie informacji",
+        "Człowiek:: ocena, decyzja i odpowiedzialność za treść",
       ],
+      { icon: "shield" },
     ],
     [
-      "Znajdź własne zastosowanie",
+      "Zaprojektuj własny przypadek użycia",
       "exercise",
       [
-        "Wybierz powtarzalne zadanie",
-        "Opisz dobry wynik",
-        "Zaprojektuj sposób sprawdzania",
+        "Wybierz zadanie:: powtarzalne i wykonywane co najmniej raz w tygodniu",
+        "Opisz dobry wynik:: dwa zdania, które zrozumie ktoś spoza zespołu",
+        "Zaplanuj kontrolę:: kto sprawdza wynik, zanim trafi do klienta",
       ],
+      { activityMinutes: 12, exerciseLabel: "Praca w parach", icon: "lamp" },
     ],
     [
-      "Zacznij od małego pilotażu",
-      "process",
+      "Pilotaż w cztery tygodnie",
+      "timeline",
       [
-        "Jedno zadanie",
-        "Mała grupa",
-        "Pomiar jakości",
-        "Decyzja o rozszerzeniu",
+        "Tydzień 1:: jedno zadanie i pomiar stanu wyjściowego",
+        "Tydzień 2:: test na dziesięciu realnych sprawach",
+        "Tydzień 3:: korekta kryteriów i instrukcji",
+        "Tydzień 4:: decyzja: rozszerzyć, poprawić albo odstawić",
       ],
+      { icon: "clock" },
     ],
     [
-      "Co zmienisz od jutra?",
+      "Co zmienisz w swojej pracy od jutra?",
       "statement",
-      ["Zapisz jedno zadanie, które przetestujesz z AI."],
+      [
+        "Zapisz jedno zadanie, które przetestujesz z asystentem w tym tygodniu.",
+        "Termin:: wróć do notatki za siedem dni i oceń wynik",
+      ],
+      { icon: "check-circle" },
     ],
   ];
   return {
     title: "AI w codziennej pracy firmy",
     style,
-    slides: topics.map(([title, layout, points]) => ({
+    durationMinutes: 40,
+    objectives: [],
+    slides: topics.map(([title, layout, points, extra = {}]) => ({
       title,
       layout,
       points,
       notes:
-        "Przykład demonstracyjny. Omów slajd i poproś uczestników o przykład z ich działu.",
+        "Przykład demonstracyjny. Omów slajd, poproś uczestników o przykład z ich działu i zapisz go na flipcharcie.",
+      ...extra,
     })),
   };
 }
@@ -148,149 +168,13 @@ export async function exportDeck(input) {
   p.theme = { headFontFace: t.font, bodyFontFace: "Aptos", lang: "pl-PL" };
   d.slides.forEach((s, i) => {
     const slide = p.addSlide();
-    if(d.burEdition===true){
-      renderBur(slide,p,s,t,root,d,i);
-      slide.addNotes([s.voiceScript,s.notes,i===0?'Astra Icons — MIT\n'+astraLicense:''].filter(Boolean).join('\n\n'));
-      return;
-    }
-    slide.background = { color: t.bg };
-    const text = (v, x, y, w, h, size = 24, color = t.fg) =>
-      slide.addText(v, {
-        x,
-        y,
-        w,
-        h,
-        fontSize: size,
-        fontFace: t.font,
-        color,
-        margin: 0,
-        breakLine: false,
-        fit: "shrink",
-        valign: "mid",
-      });
-    if (s.image) {
-      slide.addImage({
-        path: path.join(root, "public", "assets", s.image),
-        x:6.8,y:1.1,w:5.85,h:5.35,sizing:{type:"crop",w:5.85,h:5.35},
-      });
-      text(s.title, 0.65, 1.3, 5.65, 2, 34);
-      text(s.points.join("\n\n"), 0.65, 3.6, 5.5, 2.5, 21);
-      text("AI EVOLUTION POLSKA", 0.65, 6.8, 10, 0.3, 10, t.accent);
-      if (s.icon)
-        slide.addImage({
-          data: iconData(s.icon, t.accent),
-          x: 11.2,
-          y: 0.3,
-          w: 0.45,
-          h: 0.45,
-        });
-      slide.addNotes(
-        [
-          s.voiceScript || "",
-          s.notes,
-          i === 0 ? "Astra Icons — MIT\n" + astraLicense : "",
-        ]
-          .filter(Boolean)
-          .join("\n\n"),
-      );
-      return;
-    }
-    slide.addShape(p.ShapeType.rect, {
-      x: 0.55,
-      y: 0.5,
-      w: 0.45,
-      h: 0.06,
-      line: { color: t.accent },
-      fill: { color: t.accent },
-    });
-    text("AI EVOLUTION POLSKA", 1.15, 0.38, 9, 0.25, 10, t.accent);
-    text(String(i + 1).padStart(2, "0"), 12, 0.38, 0.6, 0.25, 10, t.accent);
-    if (s.layout === "cover") {
-      if (t.image)
-        slide.addImage({
-          path: path.join(root, "public", "assets", t.image),
-          x: 0,
-          y: 0,
-          w: 13.333,
-          h: 7.5,
-        });
-      else
-        slide.addShape(
-          ["editorial", "pop"].includes(t.id)
-            ? p.ShapeType.rect
-            : p.ShapeType.ellipse,
-          {
-            x: 8.7,
-            y: 1.6,
-            w: 4,
-            h: 4,
-            rotate: t.id === "pop" ? 15 : 0,
-            line: { color: t.accent, width: 2 },
-            fill: {
-              color: t.accent,
-              transparency: ["pop", "editorial"].includes(t.id) ? 0 : 85,
-            },
-          },
-        );
-      text(s.title, 0.65, 1.45, 6, 2.5, 38);
-      text(s.points.join("\n"), 0.65, 4.3, 5.5, 1.5, 21);
-      slide.addImage({
-        path: path.join(root, "public", "assets", "logo.png"),
-        x: 0.65,
-        y: 6.15,
-        w: 0.55,
-        h: 0.43,
-      });
-    } else {
-      text(s.title, 0.65, 1, 12, 1.2, s.layout === "statement" ? 36 : 30);
-      if (renderStructured(slide, p, s, t, text)) {
-      } else if (s.layout === "statement") {
-        text(s.points.join("\n"), 0.8, 3, 10.9, 2.5, 32, t.accent);
-      } else {
-        s.points.forEach((v, j) => {
-          const n = s.points.length,
-            w = (12 - (n - 1) * 0.25) / n,
-            x = 0.65 + j * (w + 0.25);
-          slide.addShape(p.ShapeType.roundRect, {
-            x,
-            y: 2.65,
-            w,
-            h: 3.1,
-            radius: 0.12,
-            line: { color: t.panel },
-            fill: { color: t.panel },
-          });
-          text(
-            String(j + 1).padStart(2, "0"),
-            x + 0.2,
-            2.9,
-            w - 0.4,
-            0.6,
-            25,
-            t.accent,
-          );
-          text(v, x + 0.2, 3.65, w - 0.4, 1.65, 21);
-        });
-      }
-    }
-    text(
-      s.layout === "exercise"
-        ? "ĆWICZENIE • PRACA W PARACH"
-        : "SZKOLENIE DLA FIRM",
-      0.65,
-      6.85,
-      10,
-      0.25,
-      9,
-      t.accent,
-    );
-    if (s.icon)
-      slide.addImage({
-        data: iconData(s.icon, t.accent),
-        x: 11.2,
-        y: 0.3,
-        w: 0.45,
-        h: 0.45,
+    if (d.burEdition === true) renderBur(slide, p, s, t, root, d, i);
+    else
+      renderSlide(slide, p, s, t, {
+        root,
+        index: i,
+        total: d.slides.length,
+        deck: d,
       });
     slide.addNotes(
       [
@@ -302,15 +186,27 @@ export async function exportDeck(input) {
         .join("\n\n"),
     );
   });
-  const buffer=await p.write({ outputType: "nodebuffer" });
-  if(!input.burEdition)return buffer;
-  const zip=await JSZip.loadAsync(buffer);
-  for(const name of Object.keys(zip.files).filter(n=>/^ppt\/slides\/slide\d+\.xml$/.test(n))){
-   let xml=await zip.file(name).async('string');
-   xml=xml.replace(/<p:pic\b[\s\S]*?<\/p:pic>/g,pic=>pic.includes('BUR_ROUND')?pic.replace(/<a:prstGeom prst="rect">[\s\S]*?<\/a:prstGeom>/,'<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 6000"/></a:avLst></a:prstGeom>'):pic);
-   xml=xml.replace('</p:sld>','<p:transition spd="med"><p:fade/></p:transition></p:sld>');
-   zip.file(name,xml);
+  const buffer = await p.write({ outputType: "nodebuffer" });
+  const zip = await JSZip.loadAsync(buffer);
+  for (const name of Object.keys(zip.files).filter((n) =>
+    /^ppt\/slides\/slide\d+\.xml$/.test(n),
+  )) {
+    let xml = await zip.file(name).async("string");
+    // Rounded photo corners: the picture stays a native, replaceable PowerPoint object.
+    xml = xml.replace(/<p:pic\b[\s\S]*?<\/p:pic>/g, (pic) =>
+      /BUR_ROUND|ROUND_IMAGE/.test(pic)
+        ? pic.replace(
+            /<a:prstGeom prst="rect">[\s\S]*?<\/a:prstGeom>/,
+            '<a:prstGeom prst="roundRect"><a:avLst><a:gd name="adj" fmla="val 6000"/></a:avLst></a:prstGeom>',
+          )
+        : pic,
+    );
+    xml = xml.replace(
+      "</p:sld>",
+      '<p:transition spd="med"><p:fade/></p:transition></p:sld>',
+    );
+    zip.file(name, xml);
   }
   await deduplicateMedia(zip);
-  return zip.generateAsync({type:'nodebuffer',compression:'DEFLATE'});
+  return zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
 }

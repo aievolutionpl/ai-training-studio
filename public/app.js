@@ -1,5 +1,6 @@
 if(new URLSearchParams(location.search).has('module')&&!new URLSearchParams(location.search).has('simple'))location.replace('/editor.html'+location.search);
 import {burPreview} from './bur-preview.js';
+import {slidePreview} from './preview.js';
 const $ = (s) => document.querySelector(s),
   esc = (s) =>
     String(s ?? "").replace(
@@ -17,6 +18,10 @@ const css = document.createElement("link");
 css.rel = "stylesheet";
 css.href = "/final.css";
 document.head.append(css);
+const previewCss = document.createElement("link");
+previewCss.rel = "stylesheet";
+previewCss.href = "/slide-preview.css";
+document.head.append(previewCss);
 const styles = await (await fetch("/api/styles")).json();
 let selected = "evolution",
   view = "create",
@@ -47,12 +52,18 @@ function slide(
   s = {
     title: "Przyszłość pracy zaczyna się teraz",
     layout: "cover",
-    points: ["AI w praktyce Twojej firmy"],
+    points: ["AI w praktyce Twojej firmy:: jeden proces, jeden wynik, jedna decyzja"],
   },
+  opts = {},
 ) {
-  if(deck?.burEdition && deck.slides.includes(s)) return burPreview(deck,s,deck.slides.indexOf(s));
-  const cover = s.layout === "cover";
-  return `<div class="slide ${cover ? "" : "content"} ${cover && t.image ? "has-image" : ""}" data-style="${t.id}" style="--bg:#${t.bg};--fg:#${t.fg};--accent:#${t.accent};--panel:#${t.panel};--font:${t.font}">${cover ? (t.image ? `<img src="/assets/${t.image}" alt="">` : '<div class="orb"></div>') : ""}${s.image ? `<img class="custom-illustration" src="/assets/${esc(s.image)}" alt="Ilustracja slajdu">` : ""}${s.icon ? `<img class="slide-icon" src="/icons/${esc(s.icon)}.svg" alt="">` : ""}<div class="kicker">AI EVOLUTION POLSKA / ${cover ? "SZKOLENIE" : "W PRAKTYCE"}</div><h3>${esc(s.title)}</h3>${cover ? `<p>${esc(s.points[0])}</p>` : `<div class="slide-content">${s.points.map((p, i) => `<div><b>0${i + 1}</b>${esc(p.replaceAll("::", ": "))}</div>`).join("")}</div>`}<div class="footer">WIEDZA → PRAKTYKA → ZMIANA</div></div>`;
+  if (deck?.burEdition && deck.slides.includes(s))
+    return burPreview(deck, s, deck.slides.indexOf(s));
+  const owned = Array.isArray(deck?.slides) && deck.slides.includes(s);
+  return slidePreview(t, s, {
+    index: opts.index ?? (owned ? deck.slides.indexOf(s) : 0),
+    total: opts.total ?? (owned ? deck.slides.length : 8),
+    deck: owned ? deck : {},
+  });
 }
 function cards() {
   return `<div class="style-grid">${styles.map((t) => `<article class="style-card ${selected === t.id ? "selected" : ""}" data-select="${t.id}" tabindex="0" role="button" aria-label="Wybierz ${t.name}">${slide(t)}<div class="style-meta"><div><strong>${t.name}</strong><br><small>${t.tag}</small></div><button data-preview="${t.id}">Podgląd ↗</button></div></article>`).join("")}</div>`;
@@ -132,7 +143,7 @@ document.addEventListener("click", async (e) => {
     if (preview) {
       const t = theme(preview.dataset.preview);
       $("#preview").innerHTML =
-        `<button class="close">✕</button><h2>${t.name}</h2><p class="lead">${t.desc}</p><div class="preview-grid">${slide(t)}${slide(t, { title: "Trzy role AI w Twojej firmie", layout: "cards", points: ["Asystent zespołu", "Analiza informacji", "Nowe pomysły"] })}${slide(t, { title: "Od pomysłu do wdrożenia", layout: "process", points: ["Wybierz zadanie", "Przetestuj wynik", "Oceń jakość"] })}</div>`;
+        `<button class="close">✕</button><h2>${t.name}</h2><p class="lead">${t.desc}</p><div class="preview-grid">${slide(t, undefined, { index: 0, total: 4 })}${slide(t, { title: "Trzy role AI w Twojej firmie", layout: "cards", points: ["Asystent:: przygotowuje pierwszą wersję tekstu", "Analityk:: porządkuje i porównuje informacje", "Partner:: proponuje warianty do oceny"] }, { index: 1, total: 4 })}${slide(t, { title: "Od pomysłu do wdrożenia", layout: "process", points: ["Wybierz zadanie:: powtarzalne i sprawdzalne", "Przetestuj wynik:: na dziesięciu realnych sprawach", "Oceń jakość:: według kryteriów spisanych wcześniej"] }, { index: 2, total: 4 })}${slide(t, { title: "Zaprojektuj własny przypadek użycia", layout: "exercise", activityMinutes: 12, points: ["Opisz zadanie:: co dziś zajmuje najwięcej czasu", "Zdefiniuj dobry wynik:: po czym poznasz jakość", "Zaplanuj kontrolę:: kto sprawdza przed wysyłką"] }, { index: 3, total: 4 })}</div>`;
       $("#preview").showModal();
       return;
     }
@@ -308,20 +319,47 @@ document.addEventListener("click", async (e) => {
     if (e.target.id === "trainer-guide")
       return download(await r.blob(), "skrypt-trenera.md");
     const q = await r.json();
+    const AREAS = {
+      design: "Układ i czytelność",
+      content: "Treść",
+      language: "Język",
+      coherence: "Spójność modułu",
+      research: "Źródła",
+      script: "Skrypt trenera",
+      materials: "Materiały uczestnika",
+      timing: "Czas",
+      assessment: "Test",
+    };
+    const grouped = q.issues.reduce((acc, i) => {
+      (acc[i.area] ||= []).push(i);
+      return acc;
+    }, {});
     $("#preview").innerHTML =
       '<button class="close">✕</button><h2>Przegląd szkolenia</h2><p>' +
       esc(q.summary) +
       '</p><p class="muted">Kontrola reguł treści i narracji. Nie zastępuje przeglądu wizualnego PPTX.</p>' +
-      q.issues
-        .map(
-          (i) =>
-            "<p><strong>" +
-            esc(i.slide ? "Slajd " + i.slide : "Moduł") +
-            "</strong> · " +
-            esc(i.message) +
-            "</p>",
-        )
-        .join("");
+      (q.issues.length
+        ? Object.entries(grouped)
+            .map(
+              ([area, list]) =>
+                "<h3>" +
+                esc(AREAS[area] || area) +
+                " <small>(" +
+                list.length +
+                ")</small></h3>" +
+                list
+                  .map(
+                    (i) =>
+                      "<p><strong>" +
+                      esc(i.slide ? "Slajd " + i.slide : "Moduł") +
+                      "</strong> · " +
+                      esc(i.message) +
+                      "</p>",
+                  )
+                  .join(""),
+            )
+            .join("")
+        : "<p>Bez uwag strukturalnych. Sprawdź jeszcze wygląd slajdów w PowerPoint.</p>");
     $("#preview").showModal();
   } catch (err) {
     toast(err.message);

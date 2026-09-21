@@ -1,3 +1,5 @@
+import { genericLayouts } from "./layouts.mjs";
+
 const string = { type: "string" },
   number = { type: "number" },
   strings = { type: "array", items: string };
@@ -38,17 +40,9 @@ export const trainingSchema = object({
     type: "array",
     items: object({
       title: string,
-      layout: {
-        type: "string",
-        enum: [
-          "cover",
-          "cards",
-          "process",
-          "statement",
-          "exercise",
-          "comparison",
-        ],
-      },
+      // Structured output runs in strict mode: every property stays required.
+      kicker: string,
+      layout: { type: "string", enum: [...genericLayouts] },
       points: strings,
       notes: string,
       voiceScript: string,
