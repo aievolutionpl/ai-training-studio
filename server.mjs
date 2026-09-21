@@ -232,7 +232,7 @@ const server = http.createServer(async (req, res) => {
       return json({
         ...r,
         issues: [...r.issues, ...t.issues],
-        summary: `${r.issues.length + t.issues.length} uwag · szacowany czas ${t.estimatedMinutes} min`,
+        summary: `${r.issues.length + t.issues.length} uwag · ocena struktury ${r.score}/100 · szacowany czas ${t.estimatedMinutes} min, w tym ${t.activityMinutes} min pracy własnej`,
         training: t,
       });
     }

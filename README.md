@@ -56,6 +56,8 @@ Otwórz **http://localhost:4317**. W Windows możesz użyć `Start-Studio.ps1` p
 
 **Nie wysyłaj uczestnikom całego ZIP bez sprawdzenia zawartości:** może zawierać klucz testu i prywatne instrukcje prowadzenia.
 
+Przycisk **Sprawdź jakość modułu** pokazuje uwagi pogrupowane według obszaru — układ, treść, język, spójność, skrypt, materiały, czas, źródła — razem z oceną struktury 0–100 i szacowanym czasem. Ocena jest pomocą w przeglądzie, a nie certyfikatem: reguły nie czytają sensu zdań i nie sprawdzają wyglądu pliku.
+
 ## Osiem kierunków wizualnych
 
 | Styl            | Charakter                                            |
@@ -69,7 +71,27 @@ Otwórz **http://localhost:4317**. W Windows możesz użyć `Start-Studio.ps1` p
 | Bold Ideas      | Żółty i fioletowy kontrast dla warsztatu             |
 | Soft Gradient   | Różowa paleta i śliwkowy tekst                       |
 
-Każdy styl ma podgląd w aplikacji. Układy: okładka, karty, proces, porównanie, ćwiczenie i główna myśl. Procesy i porównania powstają z natywnych obiektów PowerPoint.
+Każdy styl ma podgląd w aplikacji. Wszystkie układy powstają z natywnych obiektów PowerPoint — kształtów, pól tekstowych i linii, które otworzysz i poprawisz w programie.
+
+## Trzynaście układów slajdu
+
+| Układ                | Kiedy go użyć                                             |
+| -------------------- | --------------------------------------------------------- |
+| `cover`              | Okładka modułu                                             |
+| `cards`              | 2–4 równorzędne pojęcia albo role                          |
+| `process`            | Kolejne kroki jednej procedury                             |
+| `timeline`           | Etapy rozłożone w czasie                                   |
+| `statement`          | Jedna teza do zapamiętania                                 |
+| `comparison`         | Dwie lub cztery strony zestawienia                         |
+| `exercise`           | Zadanie na sali, z czasem pracy własnej                    |
+| `anatomy` / `matrix` | Części składowe albo kryterium i wyjaśnienie, wiersz po wierszu |
+| `evidence` / `case`  | Wynik i fakty, które go opisują                            |
+| `decision`           | Pytanie rozstrzygające i warianty                          |
+| `image`              | Ilustracja z wnioskami obok                                |
+
+**Punkty zapisuj jako `Hasło:: wyjaśnienie`.** Część przed `::` staje się nagłówkiem karty, część po niej opisem. Zapis `Hasło: wyjaśnienie` z krótkim hasłem działa tak samo, więc starsze pliki `deck.json` również zyskują hierarchię. Do każdego hasła dobierana jest ikona pasująca do znaczenia tekstu.
+
+Rozmiary pisma dobiera silnik: panele rosną do treści, a zbyt długi tekst jest zmniejszany, zanim wyjdzie poza pole. Kolory paneli, obramowań i tekstu uzupełniającego wyliczamy z palety stylu, więc ten sam układ pozostaje czytelny na jasnym i ciemnym tle. Test `design.test.mjs` sprawdza kontrast każdego stylu.
 
 <p align="center">
 <img src="public/icons/target.svg" width="42" alt="Cel" /> &nbsp;
@@ -117,7 +139,7 @@ npm test
 
 CLI zapisuje PPTX, ZIP szkolenia i dokumenty obok pliku wyjściowego. Dołączony [przykład brief-ai.json](examples/brief-ai.json) zawiera 5 slajdów na 10 minut, skrypty po około 160 słów i ćwiczenia. Wypróbuj `npm run export -- examples/brief-ai.json przyklad.pptx`. Agent pracujący w repo powinien zacząć od [AGENTS.md](AGENTS.md).
 
-Najważniejsze moduły: `engine.mjs` i `layouts.mjs` renderują PPTX; `training.mjs` waliduje i pakuje materiały; `training-prompt.mjs` definiuje instrukcje dydaktyczne; `images.mjs` obsługuje ilustracje; `server.mjs` uruchamia zadania i zapisuje wyniki; `public/` zawiera lokalny edytor.
+Najważniejsze moduły: `engine.mjs` i `layouts.mjs` renderują PPTX, `design.mjs` i `public/palette.mjs` trzymają wspólne tokeny (kolory, dopasowanie tekstu, dobór ikon) używane też przez podgląd w przeglądarce (`public/preview.js`); `training.mjs` waliduje i pakuje materiały; `training-prompt.mjs` definiuje instrukcje dydaktyczne; `images.mjs` obsługuje ilustracje; `server.mjs` uruchamia zadania i zapisuje wyniki; `public/` zawiera lokalny edytor.
 
 ## Co wykorzystujemy z innych projektów
 
